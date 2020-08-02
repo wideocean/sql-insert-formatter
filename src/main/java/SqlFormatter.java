@@ -13,7 +13,14 @@ import java.util.stream.Stream;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-public class Main {
+public class SqlFormatter {
+
+	/**
+	 * Pattern for one INSERT statement. For further testing (without double
+	 * backslashes):
+	 * (\s*(?i)INSERT\s+INTO\s+)([a-zA-Z0-9_]+\.{0,1}[a-zA-Z0-9_]+\s*\([a-zA-Z0-9_,\s]+\))\s*(?i)VALUES\s*(\(.+\))\s*[;@]\s*
+	 */
+	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
 
 	public static void main(String[] args) throws IOException {
 
@@ -26,11 +33,7 @@ public class Main {
 		List<String> collect = lines.filter(line -> !line.isEmpty()).collect(Collectors.toList());
 		lines.close();
 
-		// Pattern for one INSERT statement
-		// for further testing, full regex:
-		// (\s*(?i)INSERT\s+INTO\s+)([a-zA-Z0-9_]+\.{0,1}[a-zA-Z0-9_]+\s*\([a-zA-Z0-9_,\s]+\))\s*(?i)VALUES\s*(\(.+\))\s*[;@]
-		Pattern pattern = Pattern.compile(
-				"(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]");
+		Pattern pattern = Pattern.compile(regex);
 
 		List<String> finalList = new ArrayList<String>();
 
