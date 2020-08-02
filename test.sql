@@ -1,0 +1,14 @@
+INSERT INTO TableA (ID,AGE,NAME) VALUES (1,12,'asd');
+INSERT INTO TableB (ID,HEIGHT,NAME) VALUES (2,12,'asd');
+INSERT INTO TableB (ID,HEIGHT,NAME) VALUES (3,12,'asd');
+INSERT INTO TableA (ID,AGE,NAME) VALUES (4,12,'asd');
+
+INSERT INTO TableA (ID,AGE,NAME) VALUES (5,12,'asd');
+
+INSERT
+INTO
+TableC(A,B,C_1) 
+VALUES (a,b)
+;
+
+insert      into abc.TableD    (ID, WEIGHT) values (1,60);
