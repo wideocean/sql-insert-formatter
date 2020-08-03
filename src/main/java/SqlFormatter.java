@@ -1,5 +1,6 @@
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,9 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class SqlFormatter {
 
@@ -24,8 +22,8 @@ public class SqlFormatter {
 
 	public static void main(String[] args) throws IOException {
 
-		File file = new File("aaa.txt");
-		System.out.println(file.getAbsolutePath());
+		Path newFile = Paths.get("new.sql");
+		System.out.println(newFile);
 
 		Path path = Paths.get("test.sql");
 
@@ -52,22 +50,36 @@ public class SqlFormatter {
 			}
 		}
 
-		Multimap<String, String> map = ArrayListMultimap.create();
+		List<TableEntry> tableList = new ArrayList<TableEntry>();
 
+		String table = "";
+		List<String> values = new ArrayList<String>();
 		for (String line : finalList) {
 			Matcher matcher = pattern.matcher(line);
-
 			System.out.println(line);
 			if (matcher.find()) {
-				System.out.println("Found value: " + matcher.group(0));
-				System.out.println("Found value: " + matcher.group(1));
-				System.out.println("Found value: " + matcher.group(2));
-				System.out.println("Found value: " + matcher.group(3));
+				System.out.println("group 2: " + matcher.group(2));
+				System.out.println("group 3: " + matcher.group(3));
 
-				String tableWithColumns = matcher.group(2).replaceAll("\\s", "").toUpperCase();
-				System.out.println(tableWithColumns);
-				String values = matcher.group(3);
-				map.put(tableWithColumns, values);
+				String currentTable = matcher.group(2).toUpperCase();
+				String currentValues = matcher.group(3);
+
+				// TODO optional formatting
+				// currentTable = currentTable.replaceAll("\\s", "");
+
+				// regex for removing whitespaces outside quotes
+				// currentValues =
+				// currentVales.replaceAll("\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)", "");
+
+				if (table.equals(currentTable)) {
+					values.add(currentValues);
+				} else {
+					table = currentTable;
+					values = new ArrayList<String>();
+					values.add(currentValues);
+					tableList.add(new TableEntry(table, values));
+				}
+
 			} else
 				// should not happen since finalList is already processed and should contain
 				// only valid entries
@@ -75,9 +87,23 @@ public class SqlFormatter {
 		}
 
 		System.out.println("Result");
-		for (String key : map.keySet()) {
-			System.out.println(key);
-			System.out.println(map.get(key));
+		for (TableEntry entry : tableList) {
+			System.out.println(entry.getTable());
+			entry.getValues().forEach(x -> System.out.println(x));
+		}
+
+		try (BufferedWriter writer = Files.newBufferedWriter(newFile, Charset.forName("UTF-8"))) {
+			for (TableEntry entry : tableList) {
+				writer.write("INSERT INTO " + entry.getTable() + " VALUES ");
+				writer.newLine();
+				String joinedValues = entry.getValues().stream()
+						.collect(Collectors.joining("," + System.lineSeparator(), "", ";"));
+				writer.write(joinedValues);
+				writer.newLine();
+
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 
 	}
