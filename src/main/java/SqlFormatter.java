@@ -20,14 +20,11 @@ public class SqlFormatter {
 	 */
 	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
 
-	public static void main(String[] args) throws IOException {
+	public static String format(String inputFilePath) throws IOException {
+		Path inputPath = Paths.get(inputFilePath);
+		System.out.println(inputPath.toAbsolutePath());
 
-		Path newFile = Paths.get("new.sql");
-		System.out.println(newFile);
-
-		Path path = Paths.get("test.sql");
-
-		Stream<String> lines = Files.lines(path);
+		Stream<String> lines = Files.lines(inputPath);
 		List<String> collect = lines.filter(line -> !line.isEmpty()).collect(Collectors.toList());
 		lines.close();
 
@@ -92,19 +89,32 @@ public class SqlFormatter {
 			entry.getValues().forEach(x -> System.out.println(x));
 		}
 
+		Path newFile = Paths.get(inputFilePath.substring(0, inputFilePath.lastIndexOf(".")) + "_formatted.sql");
+		System.out.println(newFile);
 		try (BufferedWriter writer = Files.newBufferedWriter(newFile, Charset.forName("UTF-8"))) {
+			boolean firstInsert = true;
 			for (TableEntry entry : tableList) {
+				if (!firstInsert) {
+					writer.newLine();
+				}
 				writer.write("INSERT INTO " + entry.getTable() + " VALUES ");
 				writer.newLine();
 				String joinedValues = entry.getValues().stream()
 						.collect(Collectors.joining("," + System.lineSeparator(), "", ";"));
 				writer.write(joinedValues);
 				writer.newLine();
-
+				firstInsert = false;
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+
+		return newFile.toAbsolutePath().toString();
+	}
+
+	public static void main(String[] args) throws IOException {
+		String formattedFile = format("test.sql");
+		System.out.println(formattedFile);
 
 	}
 
