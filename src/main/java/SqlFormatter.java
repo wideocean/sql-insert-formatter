@@ -18,7 +18,7 @@ public class SqlFormatter {
 	 * backslashes):
 	 * (\s*(?i)INSERT\s+INTO\s+)([a-zA-Z0-9_]+\.{0,1}[a-zA-Z0-9_]+\s*\([a-zA-Z0-9_,\s]+\))\s*(?i)VALUES\s*(\(.+\))\s*[;@]\s*
 	 */
-	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
+	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*)(\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
 
 	public static String format(String inputFilePath) throws IOException {
 		Path inputPath = Paths.get(inputFilePath);
@@ -50,6 +50,7 @@ public class SqlFormatter {
 		List<TableEntry> tableList = new ArrayList<TableEntry>();
 
 		String table = "";
+		String columns = "";
 		List<String> values = new ArrayList<String>();
 		for (String line : finalList) {
 			Matcher matcher = pattern.matcher(line);
@@ -57,24 +58,24 @@ public class SqlFormatter {
 			if (matcher.find()) {
 				System.out.println("group 2: " + matcher.group(2));
 				System.out.println("group 3: " + matcher.group(3));
+				System.out.println("group 4: " + matcher.group(4));
 
-				String currentTable = matcher.group(2).toUpperCase();
-				String currentValues = matcher.group(3);
+				String currentTable = matcher.group(2).toUpperCase().trim();
+				String currentColumns = matcher.group(3).replaceAll("\\s+", "");
+				String currentValues = matcher.group(4);
 
-				// TODO optional formatting
-				// currentTable = currentTable.replaceAll("\\s", "");
-
-				// regex for removing whitespaces outside quotes
+				// TODO regex for removing whitespaces outside quotes
 				// currentValues =
 				// currentVales.replaceAll("\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)", "");
 
-				if (table.equals(currentTable)) {
+				if (table.equals(currentTable) && columns.equals(currentColumns)) {
 					values.add(currentValues);
 				} else {
 					table = currentTable;
+					columns = currentColumns;
 					values = new ArrayList<String>();
 					values.add(currentValues);
-					tableList.add(new TableEntry(table, values));
+					tableList.add(new TableEntry(table, columns, values));
 				}
 
 			} else
@@ -97,7 +98,7 @@ public class SqlFormatter {
 				if (!firstInsert) {
 					writer.newLine();
 				}
-				writer.write("INSERT INTO " + entry.getTable() + " VALUES ");
+				writer.write("INSERT INTO " + entry.getTable() + " " + entry.getColumns() + " VALUES ");
 				writer.newLine();
 				String joinedValues = entry.getValues().stream()
 						.collect(Collectors.joining("," + System.lineSeparator(), "", ";"));
