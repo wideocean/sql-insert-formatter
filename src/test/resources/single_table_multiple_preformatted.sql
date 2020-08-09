@@ -1,0 +1,16 @@
+INSERT INTO TABLEA (ID,AGE,NAME) VALUES 
+(1,12,'asd'),
+(1,12,    'asd'),
+(1,12,'asd'),
+(1,12    ,'asd');
+
+INSERT INTO TABLEA (ID,AGE) VALUES 
+(100,12),
+(101,12);
+
+INSERT INTO TABLEA (ID,AGE,NAME) VALUES 
+(4,12,'asd'),
+(5,12,'asd');
+
+INSERT INTO TABLEA (ID,AGE) VALUES 
+(102,12);
