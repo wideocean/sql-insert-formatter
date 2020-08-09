@@ -1,0 +1,8 @@
+INSERT INTO TableC(A,B,C) VALUES (a,b,c);
+
+INSERT
+INTO
+TableC(A,B,C) 
+VALUES (a2,b2,c2)
+;
+INSERT INTO TableC(A,B,C) VALUES (a3,b3,c3);

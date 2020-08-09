@@ -1,0 +1,17 @@
+INSERT INTO TABLEA (ID,AGE,NAME) VALUES 
+(1,12,'asd'),
+(1,12,    'asd'),
+(1,12,'asd'),
+(1,12    ,'asd');
+
+INSERT INTO TABLEA (ID,AGE) VALUES 
+(100,12),
+(101,12);
+
+INSERT INTO TABLEB (ID,HEIGHT,NAME) VALUES 
+(2,12,'asd'),
+(3,12,'asd');
+
+INSERT INTO TABLEC (ID,AGE,NAME) VALUES 
+(4,12,'asd'),
+(5,12,'asd');

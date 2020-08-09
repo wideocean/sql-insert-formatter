@@ -58,4 +58,24 @@ class SqlFormatterTest {
 		checkFormattedEqualsExpected("single_table_multiple");
 	}
 
+	@Test
+	void testSingleTableMultipleLines() throws IOException {
+		checkFormattedEqualsExpected("single_table_multiple_lines");
+	}
+
+	@Test
+	void testSingleTableCaseAndWhitespaces() throws IOException {
+		checkFormattedEqualsExpected("single_table_case_whitespaces");
+	}
+
+	@Test
+	void testSingleTableWithSchema() throws IOException {
+		checkFormattedEqualsExpected("single_table_schema");
+	}
+
+	@Test
+	void testMultipleTablesWithNewlineBetweenInserts() throws IOException {
+		checkFormattedEqualsExpected("multiple_tables_newlines");
+	}
+
 }
