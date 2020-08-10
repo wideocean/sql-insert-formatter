@@ -1,4 +1,4 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,16 +36,22 @@ class SqlFormatterTest {
 	}
 
 	private void checkFormattedEqualsExpected(String fileName) throws IOException {
+		checkFormattedEqualsExpected(fileName, 100);
+	}
+
+	private void checkFormattedEqualsExpected(String fileName, int split) throws IOException {
 		String testFile = fileName + ".sql";
 		String expectedFile = fileName + "_preformatted.sql";
 
 		// copy test SQL file to temporary directory
 		Files.copy(testResources.resolve(testFile), tempDir.resolve(testFile));
 
-		String formattedFile = SqlFormatter.format(tempDir.resolve(testFile).toString());
+		String formattedFile = SqlFormatter.format(tempDir.resolve(testFile).toString(), split);
 
-		assertEquals(Files.readAllLines(testResources.resolve(expectedFile)),
-				Files.readAllLines(Paths.get(formattedFile)));
+		byte[] f1 = Files.readAllBytes(testResources.resolve(expectedFile));
+		byte[] f2 = Files.readAllBytes(Paths.get(formattedFile));
+
+		assertArrayEquals(f1, f2);
 	}
 
 	@Test
@@ -76,6 +82,21 @@ class SqlFormatterTest {
 	@Test
 	void testMultipleTablesWithNewlineBetweenInserts() throws IOException {
 		checkFormattedEqualsExpected("multiple_tables_newlines");
+	}
+
+	@Test
+	void testSingleTableWithDefaultSplitLimit100() throws IOException {
+		checkFormattedEqualsExpected("single_table_split_default");
+	}
+
+	@Test
+	void testSingleTableWithCustomSplitLimit50() throws IOException {
+		checkFormattedEqualsExpected("single_table_split_custom", 50);
+	}
+
+	@Test
+	void testMultipleTablesWithDefaultSplitLimit100() throws IOException {
+		checkFormattedEqualsExpected("multiple_tables_split_default");
 	}
 
 }
