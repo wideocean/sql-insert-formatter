@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class SqlFormatter {
@@ -20,7 +21,22 @@ public class SqlFormatter {
 	 */
 	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*)(\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
 
+	public static <T> Stream<List<T>> batches(List<T> source, int length) {
+		if (length <= 0)
+			throw new IllegalArgumentException("length = " + length);
+		int size = source.size();
+		if (size <= 0)
+			return Stream.empty();
+		int fullChunks = (size - 1) / length;
+		return IntStream.range(0, fullChunks + 1)
+				.mapToObj(n -> source.subList(n * length, n == fullChunks ? size : (n + 1) * length));
+	}
+
 	public static String format(String inputFilePath) throws IOException {
+		return format(inputFilePath, 100);
+	}
+
+	public static String format(String inputFilePath, int amountValues) throws IOException {
 		Path inputPath = Paths.get(inputFilePath);
 		System.out.println(inputPath.toAbsolutePath());
 
@@ -64,7 +80,8 @@ public class SqlFormatter {
 				String currentColumns = matcher.group(3).replaceAll("\\s+", "");
 				String currentValues = matcher.group(4);
 
-				// TODO regex for removing whitespaces outside quotes
+				// TODO optional
+				// regex for removing whitespaces outside quotes
 				// currentValues =
 				// currentVales.replaceAll("\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)", "");
 
@@ -98,12 +115,21 @@ public class SqlFormatter {
 				if (!firstInsert) {
 					writer.newLine();
 				}
-				writer.write("INSERT INTO " + entry.getTable() + " " + entry.getColumns() + " VALUES ");
-				writer.newLine();
-				String joinedValues = entry.getValues().stream()
-						.collect(Collectors.joining("," + System.lineSeparator(), "", ";"));
-				writer.write(joinedValues);
-				writer.newLine();
+
+				List<String> valuesList = entry.getValues();
+				batches(valuesList, amountValues).forEach(batch -> {
+					try {
+						writer.write("INSERT INTO " + entry.getTable() + " " + entry.getColumns() + " VALUES ");
+						writer.newLine();
+						String joinedValues = batch.stream()
+								.collect(Collectors.joining("," + System.lineSeparator(), "", ";"));
+						writer.write(joinedValues);
+						writer.newLine();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+				});
 				firstInsert = false;
 			}
 		} catch (IOException ex) {
