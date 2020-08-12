@@ -17,17 +17,18 @@ class SqlFormatterTest {
 	Path tempDir;
 
 	private void checkFormattedEqualsExpected(String fileName) throws IOException {
-		checkFormattedEqualsExpected(fileName, 100);
+		checkFormattedEqualsExpected(fileName, 100, false);
 	}
 
-	private void checkFormattedEqualsExpected(String fileName, int split) throws IOException {
+	private void checkFormattedEqualsExpected(String fileName, int split, boolean formatWhitespaces)
+			throws IOException {
 		String testFile = fileName + ".sql";
 		String expectedFile = fileName + "_preformatted.sql";
 
 		// copy test SQL file to temporary directory
 		Files.copy(testResources.resolve(testFile), tempDir.resolve(testFile));
 
-		String formattedFile = SqlFormatter.format(tempDir.resolve(testFile).toString(), split);
+		String formattedFile = SqlFormatter.format(tempDir.resolve(testFile).toString(), split, formatWhitespaces);
 
 		byte[] f1 = Files.readAllBytes(testResources.resolve(expectedFile));
 		byte[] f2 = Files.readAllBytes(Paths.get(formattedFile));
@@ -72,7 +73,7 @@ class SqlFormatterTest {
 
 	@Test
 	void testSingleTableWithCustomSplitLimit50() throws IOException {
-		checkFormattedEqualsExpected("single_table_split_custom", 50);
+		checkFormattedEqualsExpected("single_table_split_custom", 50, false);
 	}
 
 	@Test
@@ -84,7 +85,12 @@ class SqlFormatterTest {
 	void testIrrelevantSqlStatements() throws IOException {
 		String testFile = "irrelevant_sql_statements.sql";
 		Files.copy(testResources.resolve(testFile), tempDir.resolve(testFile));
-		assertEquals("Nothing to be formatted", SqlFormatter.format(tempDir.resolve(testFile).toString()));
+		assertEquals("", SqlFormatter.format(tempDir.resolve(testFile).toString()));
+	}
+
+	@Test
+	void testWhitespacesOutsideQuotesFormatted() throws IOException {
+		checkFormattedEqualsExpected("whitespaces_outside_quotes", 100, true);
 	}
 
 }

@@ -1,5 +1,6 @@
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,6 +114,13 @@ class SqlFormatterRegexTest {
 	@Test
 	void testRegexMissingDelimiter() {
 		matchesNotPattern("INSERT INTO TableA (ID,AGE,NAME) VALUES (1,12,'asd')");
+	}
+
+	@Test
+	void testRegexRemoveWhitespacesOutsideQuotes() {
+		String s = "(   1  ,    2   ,   '  a s  d'  ) ";
+		String s2 = "(1,2,'  a s  d')";
+		assertEquals(s2, s.replaceAll(SqlFormatter.whitespaceRegex, ""));
 	}
 
 }

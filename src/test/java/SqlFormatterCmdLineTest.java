@@ -95,4 +95,38 @@ class SqlFormatterCmdLineTest {
 		assertTrue(outputStreamCaptor.toString().trim().contains("Formatted file:"));
 	}
 
+	@Test
+	void testCmdArgumentsValidFileFormatWhitespaces() throws IOException, ParseException {
+		String testFile = "single_table.sql";
+		// copy test SQL file to temporary directory
+		Files.copy(testResources.resolve(testFile), tempDir.resolve(testFile));
+
+		SqlFormatter.main(new String[] { "-file", tempDir.resolve(testFile).toString(), "-formatspaces" });
+
+		assertTrue(outputStreamCaptor.toString().trim().contains("Formatted file:"));
+	}
+
+	@Test
+	void testCmdArgumentsValidFileValidSplitFormatWhitespaces() throws IOException, ParseException {
+		String testFile = "single_table.sql";
+		// copy test SQL file to temporary directory
+		Files.copy(testResources.resolve(testFile), tempDir.resolve(testFile));
+
+		SqlFormatter
+				.main(new String[] { "-file", tempDir.resolve(testFile).toString(), "-split", "10", "-formatspaces" });
+
+		assertTrue(outputStreamCaptor.toString().trim().contains("Formatted file:"));
+	}
+
+	@Test
+	void testCmdArgumentsValidFileIrrelevantSQL() throws IOException, ParseException {
+		String testFile = "irrelevant_sql_statements.sql";
+		// copy test SQL file to temporary directory
+		Files.copy(testResources.resolve(testFile), tempDir.resolve(testFile));
+
+		SqlFormatter.main(new String[] { "-file", tempDir.resolve(testFile).toString() });
+
+		assertTrue(outputStreamCaptor.toString().trim().equals("Nothing to be formatted"));
+	}
+
 }
