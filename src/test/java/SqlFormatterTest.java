@@ -16,22 +16,6 @@ class SqlFormatterTest {
 	@TempDir
 	Path tempDir;
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-	}
-
-	@BeforeEach
-	void setUp() throws Exception {
-	}
-
-	@AfterEach
-	void tearDown() throws Exception {
-	}
-
 	private void checkFormattedEqualsExpected(String fileName) throws IOException {
 		checkFormattedEqualsExpected(fileName, 100);
 	}

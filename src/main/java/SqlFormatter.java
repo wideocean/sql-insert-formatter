@@ -54,7 +54,6 @@ public class SqlFormatter {
 
 	public static String format(String inputFilePath, int amountValues) throws IOException {
 		Path inputPath = Paths.get(inputFilePath);
-//		System.out.println(inputPath.toAbsolutePath());
 
 		List<String> collect = new ArrayList<String>();
 		try {
