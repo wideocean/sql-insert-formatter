@@ -1,14 +1,11 @@
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -97,6 +94,13 @@ class SqlFormatterTest {
 	@Test
 	void testMultipleTablesWithDefaultSplitLimit100() throws IOException {
 		checkFormattedEqualsExpected("multiple_tables_split_default");
+	}
+
+	@Test
+	void testIrrelevantSqlStatements() throws IOException {
+		String testFile = "irrelevant_sql_statements.sql";
+		Files.copy(testResources.resolve(testFile), tempDir.resolve(testFile));
+		assertEquals("Nothing to be formatted", SqlFormatter.format(tempDir.resolve(testFile).toString()));
 	}
 
 }
