@@ -29,6 +29,12 @@ public class SqlFormatter {
 	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*)(\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
 
 	/**
+	 * Pattern for removing whitespaces outside quotes
+	 * \s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)
+	 */
+	public static String whitespaceRegex = "\\s+(?=(?:[^\'\"]*[\'\"][^\'\"]*[\'\"])*[^\'\"]*$)";
+
+	/**
 	 * Returns a stream of List where the elements are partitioned chunks of the
 	 * given source list and have the given length.
 	 * 
@@ -48,11 +54,38 @@ public class SqlFormatter {
 				.mapToObj(n -> source.subList(n * length, n == fullChunks ? size : (n + 1) * length));
 	}
 
+	/**
+	 * Formats the given SQL file specified by inputFilePath, splitting the insert
+	 * statements each containing 100 inserts. The formatted SQL file contains the
+	 * suffix "_formatted" in the filename and will be at the same location as the
+	 * input SQL file.
+	 * 
+	 * @param inputFilePath - the path to the SQL file
+	 * @return
+	 * @throws IOException
+	 */
 	public static String format(String inputFilePath) throws IOException {
-		return format(inputFilePath, 100);
+		return format(inputFilePath, 100, false);
 	}
 
-	public static String format(String inputFilePath, int amountValues) throws IOException {
+	/**
+	 * Formats the given SQL file specified by inputFilePath, splitting the insert
+	 * statements each containing the amount specified by amountValues. Optionally,
+	 * redundant whitespaces outside quotes inside the VALUES (...) clause can be
+	 * removed. The formatted SQL file contains the suffix "_formatted" in the
+	 * filename and will be at the same location as the input SQL file.
+	 * 
+	 * @param inputFilePath     - the path to the SQL file
+	 * @param amountValues      - the amount each insert statement should insert at
+	 *                          once
+	 * @param formatWhitespaces - whether whitespaces outside quotes inside VALUES
+	 *                          (...) clause should be removed
+	 * @return Returns the path to the formatted SQL file; in case of any errors
+	 *         during formatting or in case of no formatting, an empty string will
+	 *         be returned
+	 * @throws IOException
+	 */
+	public static String format(String inputFilePath, int amountValues, boolean formatWhitespaces) throws IOException {
 		Path inputPath = Paths.get(inputFilePath);
 
 		List<String> collect = new ArrayList<String>();
@@ -94,10 +127,8 @@ public class SqlFormatter {
 				String currentColumns = matcher.group(3).replaceAll("\\s+", "");
 				String currentValues = matcher.group(4);
 
-				// TODO optional
-				// regex for removing whitespaces outside quotes
-				// currentValues =
-				// currentVales.replaceAll("\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)", "");
+				if (formatWhitespaces)
+					currentValues = currentValues.replaceAll(whitespaceRegex, "");
 
 				if (table.equals(currentTable) && columns.equals(currentColumns)) {
 					values.add(currentValues);
@@ -114,8 +145,10 @@ public class SqlFormatter {
 				throw new Error();
 		}
 
-		if (tableList.isEmpty())
-			return "Nothing to be formatted";
+		if (tableList.isEmpty()) {
+			System.out.println("Nothing to be formatted");
+			return "";
+		}
 
 		Path newFile = Paths.get(inputFilePath.substring(0, inputFilePath.lastIndexOf(".")) + "_formatted.sql");
 		try (BufferedWriter writer = Files.newBufferedWriter(newFile, Charset.forName("UTF-8"))) {
@@ -149,7 +182,7 @@ public class SqlFormatter {
 		String formattedFile = "";
 
 		// Debug purpose, test SQL file needs to be in project root directory
-//		formattedFile = format("test.sql");
+//		formattedFile = format("test.sql", 100, true);
 //		System.out.println(formattedFile);
 
 		// create Options object
@@ -158,6 +191,7 @@ public class SqlFormatter {
 		// add a option
 		options.addOption("file", true, "the SQL file to be formatted");
 		options.addOption("split", true, "the amount of values for one insert statement");
+		options.addOption("formatspaces", false, "remove whitespaces outside quotes in VALUES (...)");
 
 		// Create a parser
 		CommandLineParser parser = new DefaultParser();
@@ -173,18 +207,22 @@ public class SqlFormatter {
 
 		if (cmd.hasOption("file")) {
 			String file = cmd.getOptionValue("file");
+			int splitValue = 100;
+			boolean formatWhitespaces = false;
 			if (cmd.hasOption("split")) {
 				String split = cmd.getOptionValue("split");
 				try {
-					int splitValue = Integer.valueOf(split);
-					formattedFile = format(file, splitValue);
+					splitValue = Integer.valueOf(split);
 				} catch (NumberFormatException e) {
 					System.err.println("The value provided for the -split parameter needs to be an integer");
 					return;
 				}
-			} else {
-				formattedFile = format(file);
 			}
+			if (cmd.hasOption("formatspaces")) {
+				formatWhitespaces = true;
+			}
+
+			formattedFile = format(file, splitValue, formatWhitespaces);
 
 			if (!formattedFile.isEmpty())
 				System.out.println("Formatted file: " + formattedFile);
