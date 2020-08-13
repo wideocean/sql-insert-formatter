@@ -11,9 +11,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 1.8
@@ -24,10 +22,20 @@ jobs:
       run: mvn -B package --file pom.xml
       
   codecov:
-
     runs-on: ubuntu-latest
-
+    env:
+      PYTHON: '3.7'
     steps:
+    - uses: actions/checkout@master
+    - name: Setup Python
+      uses: actions/setup-python@master
+      with:
+        python-version: 3.7
+    - name: Generate coverage report
+      run: |
+        pip install pytest
+        pip install pytest-cov
+        pytest --cov=./ --cov-report=xml
     - uses: actions/checkout@master
     - uses: codecov/codecov-action@v1.0.12
       with:
