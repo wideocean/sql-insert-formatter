@@ -30,7 +30,7 @@ Advantages:
 * Option to remove redundant whitespaces (outside quotes) inside the VALUES (...) clause
 
 ## Usage
-* Clone repo & export to 'Runnable JAR' OR download the JAR from the Releases tab
+* Clone repo & run a Maven build with `clean install` OR download the JAR from the Releases tab
 
 * Formatting a SQL file (default amount of values for one insert is 100):
 ```
