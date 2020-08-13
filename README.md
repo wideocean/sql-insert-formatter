@@ -9,7 +9,7 @@ INSERT INTO TableA (ID,AGE,NAME) VALUES (1,12,'asd');
 ```
 When inserting multiple entries into the same table, there is no need to use multiple insert statements, instead use batch inserts like this:
 ```
-INSERT INTO TableA (ID,AGE,NAME) VALUES 
+INSERT INTO TABLEA (ID,AGE,NAME) VALUES 
 (1,12,'asd'),
 (1,12,'asd'),
 (1,12,'asd'),
