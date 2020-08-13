@@ -1,5 +1,4 @@
 ![Build](https://github.com/wideocean/sql-insert-formatter/workflows/Java%20CI%20with%20Maven/badge.svg)
-[![codecov](https://codecov.io/gh/wideocean/sql-insert-formatter/branch/master/graph/badge.svg)](https://codecov.io/gh/wideocean/sql-insert-formatter)
 
 # SQL Insert Formatter
 It happens that testdata required for unit tests is inserted into the database like this:
