@@ -228,7 +228,7 @@ public class SqlFormatter {
 				System.out.println("Formatted file: " + formattedFile);
 
 		} else {
-			System.err.println("A SQL file needs to be provided");
+			System.err.println("A SQL file needs to be provided using the -file option");
 		}
 
 	}

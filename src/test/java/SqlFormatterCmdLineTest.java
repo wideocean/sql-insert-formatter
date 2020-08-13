@@ -41,7 +41,7 @@ class SqlFormatterCmdLineTest {
 	void testCmdArgumentsNoArguments() throws IOException, ParseException {
 		SqlFormatter.main(new String[] {});
 
-		assertEquals("A SQL file needs to be provided", outputStreamCaptor.toString().trim());
+		assertEquals("A SQL file needs to be provided using the -file option", outputStreamCaptor.toString().trim());
 	}
 
 	@Test
