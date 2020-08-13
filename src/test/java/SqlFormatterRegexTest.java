@@ -1,6 +1,6 @@
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,12 +13,12 @@ class SqlFormatterRegexTest {
 
 	private void matchesPattern(String s) {
 		Matcher matcher = pattern.matcher(s);
-		assertTrue("Pattern should match but does not", matcher.matches());
+		assertTrue(matcher.matches(), "Pattern should match but does not");
 	}
 
 	private void matchesNotPattern(String s) {
 		Matcher matcher = pattern.matcher(s);
-		assertFalse("Pattern does match but should not", matcher.matches());
+		assertFalse(matcher.matches(), "Pattern does match but should not");
 	}
 
 	@Test
