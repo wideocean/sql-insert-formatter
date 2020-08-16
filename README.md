@@ -64,5 +64,48 @@ INSERT INTO TABLEA (ID,AGE,NAME) VALUES
 (1,12,'   a s  d   ');
 ```
 
+## Further Example
+
+`java -jar sql-insert-formatter.jar -file test.sql`
+
+### Input:
+```
+INSERT INTO TableA (ID,AGE,NAME) VALUES (1,12,'asd');
+INSERT INTO TableB (ID,HEIGHT,NAME) VALUES (2,12,'asd');
+INSERT INTO TableB (ID,HEIGHT,NAME) VALUES (3,12,'asd');
+INSERT INTO TableA (ID,AGE,NAME) VALUES (4,12,'asd');
+
+INSERT INTO TableA (ID,AGE,NAME) VALUES (5,12,'asd');
+
+INSERT
+INTO
+TableC(A,B,C_1) 
+VALUES (a,b,c)
+;
+
+insert      into abc.TableD    (ID, WEIGHT) values (1,60);
+insert      into abc.TableD    (ID, WEIGHT) values (2,60);
+```
+### Output:
+```
+INSERT INTO TABLEA (ID,AGE,NAME) VALUES 
+(1,12,'asd');
+
+INSERT INTO TABLEB (ID,HEIGHT,NAME) VALUES 
+(2,12,'asd'),
+(3,12,'asd');
+
+INSERT INTO TABLEA (ID,AGE,NAME) VALUES 
+(4,12,'asd'),
+(5,12,'asd');
+
+INSERT INTO TABLEC (A,B,C_1) VALUES 
+(a,b,c);
+
+INSERT INTO ABC.TABLED (ID,WEIGHT) VALUES 
+(1,60),
+(2,60);
+```
+
 ## Used Libraries
 * Apache Commons CLI (https://commons.apache.org/proper/commons-cli/) - for parsing command line arguments
