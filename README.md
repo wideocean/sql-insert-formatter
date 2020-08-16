@@ -107,5 +107,5 @@ INSERT INTO ABC.TABLED (ID,WEIGHT) VALUES
 (2,60);
 ```
 
-## Used Libraries
+## Dependencies
 * Apache Commons CLI (https://commons.apache.org/proper/commons-cli/) - for parsing command line arguments
