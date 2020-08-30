@@ -24,9 +24,9 @@ public class SqlFormatter {
 	/**
 	 * Pattern for one INSERT statement. For further testing (without double
 	 * backslashes):
-	 * (\s*(?i)INSERT\s+INTO\s+)([a-zA-Z0-9_]+\.{0,1}[a-zA-Z0-9_]+\s*\([a-zA-Z0-9_,\s]+\))\s*(?i)VALUES\s*(\(.+\))\s*[;@]\s*
+	 * (\s*(?i)INSERT\s+INTO\s+)([a-zA-Z0-9_]+\.{0,1}[a-zA-Z0-9_]+\s*)(\([a-zA-Z0-9_,\s]+\)){0,1}\s*(?i)VALUES\s*(\(.+\))\s*[;@]\s*
 	 */
-	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*)(\\([a-zA-Z0-9_,\\s]+\\))\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
+	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*)(\\([a-zA-Z0-9_,\\s]+\\)){0,1}\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
 
 	/**
 	 * Pattern for removing whitespaces outside quotes
@@ -124,7 +124,9 @@ public class SqlFormatter {
 			Matcher matcher = pattern.matcher(line);
 			if (matcher.find()) {
 				String currentTable = matcher.group(2).toUpperCase().trim();
-				String currentColumns = matcher.group(3).replaceAll("\\s+", "");
+				String currentColumns = "";
+				if (matcher.group(3) != null)
+					currentColumns = matcher.group(3).replaceAll("\\s+", "");
 				String currentValues = matcher.group(4);
 
 				if (formatWhitespaces)
@@ -139,6 +141,7 @@ public class SqlFormatter {
 					values.add(currentValues);
 					tableList.add(new TableEntry(table, columns, values));
 				}
+
 			} else
 				// should not happen since finalList is already processed and should contain
 				// only valid entries
@@ -161,7 +164,11 @@ public class SqlFormatter {
 				List<String> valuesList = entry.getValues();
 				batches(valuesList, amountValues).forEach(batch -> {
 					try {
-						writer.write("INSERT INTO " + entry.getTable() + " " + entry.getColumns() + " VALUES ");
+						String insertString = Stream.of("INSERT INTO", entry.getTable(), entry.getColumns(), "VALUES")//
+								.filter(s2 -> s2 != null && !s2.isEmpty())//
+								.collect(Collectors.joining(" ", "", " "));
+						writer.write(insertString);
+
 						writer.newLine();
 						String joinedValues = batch.stream()
 								.collect(Collectors.joining("," + System.lineSeparator(), "", ";"));

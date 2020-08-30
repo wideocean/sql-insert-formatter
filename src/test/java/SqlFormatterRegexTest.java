@@ -62,6 +62,16 @@ class SqlFormatterRegexTest {
 	}
 
 	@Test
+	void testRegexTableWithoutColumns() {
+		matchesPattern("INSERT INTO TableA VALUES (1,12,'asd');");
+	}
+
+	@Test
+	void testRegexTableAndSchemaWithoutColumns() {
+		matchesPattern("INSERT INTO SchEmA_23.TableA VALUES (1,12,'asd');");
+	}
+
+	@Test
 	void testRegexInvalidSchema() {
 		matchesNotPattern("INSERT INTO SchEmA_23.Schema2.TableA (ID,AGE,NAME) VALUES (1,12,'asd');");
 	}
@@ -89,11 +99,6 @@ class SqlFormatterRegexTest {
 	@Test
 	void testRegexMissingTable() {
 		matchesNotPattern("INSERT INTO (ID,AGE,NAME) VALUES (1,12,'asd');");
-	}
-
-	@Test
-	void testRegexMissingColumns() {
-		matchesNotPattern("INSERT INTO TableA VALUES (1,12,'asd');");
 	}
 
 	@Test

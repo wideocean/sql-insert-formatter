@@ -93,4 +93,9 @@ class SqlFormatterTest {
 		checkFormattedEqualsExpected("whitespaces_outside_quotes", 100, true);
 	}
 
+	@Test
+	void testSingleTableWithoutColumns() throws IOException {
+		checkFormattedEqualsExpected("single_table_without_columns");
+	}
+
 }
