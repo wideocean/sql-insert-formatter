@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class SqlFormatterRegexTest {
 
-	Pattern pattern = Pattern.compile(SqlFormatter.regex);
+	Pattern pattern = Pattern.compile(SqlFormatter.INSERT_REGEX);
 
 	private void matchesPattern(String s) {
 		Matcher matcher = pattern.matcher(s);
@@ -125,7 +125,7 @@ class SqlFormatterRegexTest {
 	void testRegexRemoveWhitespacesOutsideQuotes() {
 		String s = "(   1  ,    2   ,   '  a s  d'  ) ";
 		String s2 = "(1,2,'  a s  d')";
-		assertEquals(s2, s.replaceAll(SqlFormatter.whitespaceRegex, ""));
+		assertEquals(s2, s.replaceAll(SqlFormatter.WHITESPACE_REGEX, ""));
 	}
 
 }

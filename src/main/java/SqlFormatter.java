@@ -26,13 +26,13 @@ public class SqlFormatter {
 	 * backslashes):
 	 * (\s*(?i)INSERT\s+INTO\s+)([a-zA-Z0-9_]+\.{0,1}[a-zA-Z0-9_]+\s*)(\([a-zA-Z0-9_,\s]+\)){0,1}\s*(?i)VALUES\s*(\(.+\))\s*[;@]\s*
 	 */
-	public static String regex = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*)(\\([a-zA-Z0-9_,\\s]+\\)){0,1}\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
+	public static final String INSERT_REGEX = "(\\s*(?i)INSERT\\s+INTO\\s+)([a-zA-Z0-9_]+\\.{0,1}[a-zA-Z0-9_]+\\s*)(\\([a-zA-Z0-9_,\\s]+\\)){0,1}\\s*(?i)VALUES\\s*(\\(.+\\))\\s*[;@]\\s*";
 
 	/**
 	 * Pattern for removing whitespaces outside quotes
 	 * \s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)
 	 */
-	public static String whitespaceRegex = "\\s+(?=(?:[^\'\"]*[\'\"][^\'\"]*[\'\"])*[^\'\"]*$)";
+	public static final String WHITESPACE_REGEX = "\\s+(?=(?:[^\'\"]*[\'\"][^\'\"]*[\'\"])*[^\'\"]*$)";
 
 	/**
 	 * Returns a stream of List where the elements are partitioned chunks of the
@@ -98,7 +98,7 @@ public class SqlFormatter {
 			return "";
 		}
 
-		Pattern pattern = Pattern.compile(regex);
+		Pattern pattern = Pattern.compile(INSERT_REGEX);
 
 		List<String> finalList = new ArrayList<String>();
 		String s = "";
@@ -130,7 +130,7 @@ public class SqlFormatter {
 				String currentValues = matcher.group(4);
 
 				if (formatWhitespaces)
-					currentValues = currentValues.replaceAll(whitespaceRegex, "");
+					currentValues = currentValues.replaceAll(WHITESPACE_REGEX, "");
 
 				if (table.equals(currentTable) && columns.equals(currentColumns)) {
 					values.add(currentValues);
