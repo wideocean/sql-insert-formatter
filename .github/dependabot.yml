@@ -9,6 +9,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    # Prefix all commit messages with "Composer"
+    # include a list of updated dependencies
+    commit-message:
+      prefix: "maven"
+      include: "scope"
       
     # Enable version updates for Github Actions
   - package-ecosystem: "github-actions"
