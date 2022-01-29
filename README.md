@@ -23,7 +23,7 @@ Advantages:
 * faster execution time (see for example: https://stackoverflow.com/questions/1793169/which-is-faster-multiple-single-inserts-or-one-multiple-row-insert)
 
 ## Requirements
-* Java 8
+* Java 17
 
 ## Features
 * SQL keywords (INSERT INTO, VALUES), the table name and the columns will be transformed to uppercase
