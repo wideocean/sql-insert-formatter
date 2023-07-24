@@ -1,4 +1,4 @@
-![Build](https://github.com/wideocean/sql-insert-formatter/workflows/maven.yml/badge.svg)
+![Build](https://github.com/wideocean/sql-insert-formatter/actions/workflows/maven.yml/badge.svg)
 
 # SQL Insert Formatter
 It happens that testdata required for unit tests is inserted into the database like this:
